@@ -1,0 +1,7 @@
+// title
+Solving Linear systems with "quasi-empty" matrices
+
+// overall description
+As you get older, you begin to realise that one of the most important skills in life is efficiently solving linear systems (Ax = b). These systems appear everywhere, from fluid dynamics to computer graphics, and from seismology to machine learning. In many of these cases, the matrices involved contain a large number of zeros (we call them sparse). But why would you bother storing all that information if you already know it's zero?
+
+In this project, I propose to dive into the world of sparse matrices and explore some of the algorithms used to solve linear systems involving them. To make the project more engaging, we could eventually aim ro contribute to an open-source library for Rust — a modern, fast, and safe programming language that is  gaining popularity in the scientific computing community.
