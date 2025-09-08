@@ -41,7 +41,7 @@ Joseph Whitaker Schaefer & j.schaefer24@imperial.ac.uk \\
 
 \maketitle
 
-We live in a world driven by matrices - Equations describing global economies, AI models, computer graphics, and more are regularly posed and solved in matrix form. A matrix can be defined as the mathematical object used to represent a system of linear equations. Here are a few examples:
+We live in a world driven by matrices---Equations describing global economies, AI models, computer graphics, and more are regularly posed and solved in matrix form. A matrix can be defined as the mathematical object used to represent a system of linear equations. Here are a few examples:
 \begin{align*}
 	                & \quad\;\, y = 3x + 2              & \begin{pmatrix}
 		                                                      y
@@ -157,11 +157,11 @@ The second aim will be to extend this work to cover some forms of sparse matrice
 	\end{pmatrix}.
 \end{equation*}
 
-The density (e.g.\ number of non-zero elements divided by the total number of elements) of this matrix is $\frac{3n-2}{n^2}$, which tends to $0$ as $n$ goes to infinity. Because of this, using the same algorithms as for dense (e.g.\ matrices with many non-zero elements) matrices is not efficient, taking into account the prior knowledge of the null values. Contrary to what one might think, sparse matrices are used in many applications, such as solving differential equations (e.g.\ heating up your cup of milk) or graphs theory (e.g.\ finding the best route through Google Maps).
+The density of this matrix (e.g.\ number of non-zero elements divided by the total number of elements) is $\frac{3n-2}{n^2}$, which tends to $0$ as $n$ goes to infinity. Because of this, using the same algorithms as for dense matrices (e.g.\ matrices with many non-zero elements) is not efficient, taking into account the prior knowledge of the null values. Contrary to what one might think, sparse matrices are used in many applications, such as solving differential equations (e.g.\ heating up your cup of milk) or graphs theory (e.g.\ finding the best route through Google Maps).
 
 In this part of the project we will use algorithms specifically designed to solve sparse matrices, and the comparison of the performance of these algorithms with the ones used for dense matrices, in terms of the density of the matrix and the size of the matrix.
 
-This project will suit students with interested in growing their applied mathematics experience through the formulation and implementation of algorithms for scientific computing. Interest in low-level (C, Rust, C\texttt{++}, \dots) or  high-level (Python, Matlab, Julia, \dots) programming languages is useful, but not essential.
+This project will suit students interested in growing their applied mathematics experience through the formulation and implementation of algorithms for scientific computing. Interest in low-level (C, Rust, C\texttt{++}, \dots) or high-level (Python, Matlab, Julia, \dots) programming languages is useful, but not essential. No prior knowledge of matrices is required. All necessary concepts will be introduced and developed throughout the project.
 
 Below are materials regarding general numerical linear algebra~\cite{linalg} and sparse matrices~\cite{sparse} for further reading.
 
