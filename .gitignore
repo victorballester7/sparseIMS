@@ -15,6 +15,7 @@
 *.script
 *.table
 *.xml
+*-SAVE-ERROR
 
 # uv files
 *.venv**
