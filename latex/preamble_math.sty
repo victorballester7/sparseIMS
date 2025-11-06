@@ -1,4 +1,5 @@
 \usepackage{amsthm, amsmath, mathtools, amssymb, physics} % for math and physics commands and symbols.
+\usepackage{xcolor}
 
 %%%%%%% Math-commands %%%%%%%
 %%% GENERAL 
@@ -278,3 +279,32 @@
     \mkern-7mu\raisebox{-3.66pt}[\p@][\p@]{$\mathord\mathchar"017E$}$
 }
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%% Theorems, definitions,... environments %%%%%
+\newtheoremstyle{math_theorems}
+{\topsep}   % ABOVESPACE
+{\topsep}   % BELOWSPACE
+{}          % BODYFONT
+{0pt}       % INDENT (empty value is the same as 0pt)
+{\bfseries} % HEADFONT
+{.}         % HEADPUNCT
+{5pt plus 1pt minus 1pt} % HEADSPACE
+{\thmname{#1}\thmnumber{\@ifnotempty{#1}{ }\@upn{#2}}%
+  \thmnote{{ \bfseries\color{black}(#3)\index{#3}}}}          % CUSTOM-HEAD-SPEC
+
+\theoremstyle{math_theorems}
+\newtheorem{ex}{Exercise}
+
+\newtheoremstyle{math_remarks}
+{\topsep}   % ABOVESPACE
+{\topsep}   % BELOWSPACE
+{\color{gray}}          % BODYFONT
+{0pt}       % INDENT (empty value is the same as 0pt)
+{\itshape} % HEADFONT
+{.}         % HEADPUNCT
+{5pt plus 1pt minus 1pt} % HEADSPACE
+{\color{gray}\thmname{#1}\thmnote{{ \color{black}(#3)}}}          % CUSTOM-HEAD-SPEC
+
+\theoremstyle{math_remarks}
+\newtheorem{note}{Note}

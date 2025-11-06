@@ -1,0 +1,302 @@
+\documentclass{article}
+\usepackage[top=2.0cm, bottom=2.0cm, left=2.5cm, right=2.5cm]{geometry}
+\usepackage{lmodern}
+\pagestyle{empty}
+\usepackage{../preamble_math}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage[backend=biber,style=alphabetic]{biblatex}
+\addbibresource{references.bib} % your .bib file
+\usepackage{bm}
+\usepackage{parskip} % exchanges indentation for spacing between paragraphs.
+
+% change link colour
+\hypersetup{
+	colorlinks=true,
+	linkcolor=blue,
+	filecolor=magenta,      
+	urlcolor=blue,
+	citecolor=blue,
+}
+
+\title{\textbf{Problem sheet 1}}
+\date{}
+\author{Joe \& Víctor\\
+\vspace{0.5cm}\\\textsc{Department of Aeronautics}\\\textsc{Imperial College London}}
+
+% remove page numbers
+\pagenumbering{gobble}
+
+
+% remove indentation
+\setlength{\parindent}{0pt}
+
+\defbibheading{subbibcustom}{\paragraph*{References}}
+
+\begin{document}
+\maketitle
+
+The aim of these problems is to familiarize yourselves with the mathematical tools that will be used throughout the project. To check the solution we encourage you to solve the problems using \texttt{Python}. Hopefully we will provide with everything you need to get started. Ideally you should try to do this problems by your own and of course if you have doubts talk between yourselves or write to us. Later on in the project we might explore the possibility of doing divide and conquer, but for the moment we think that it is better that you solidify your knowledge in these basic concepts.
+
+\textit{We talked with Joe after last meeting and we both think that it's better for you to try to solve these small little problems that will be useful for the set up of the input for our computations, rather than try to fully understand how those methods work. We are open that you explore and code by yourselves any of the methods that are already in the literature so that later we have more data to compare with, but in general we think that for most of the methods an intuitive idea is enough (it is what we always have in mind!! We don't remember the details of LU decomposition for example).}
+
+\subsection*{Elemental matrix operations}
+\begin{ex}
+	Consider the matrices
+	$$
+		\vf{A} = \begin{pmatrix}
+			7 & 2 \\
+			3 & 6
+		\end{pmatrix}, \quad \vf{B} = \begin{pmatrix}
+			2 & -2 \\
+			1 & 3
+		\end{pmatrix},\quad
+		\vf{C} = \begin{pmatrix}
+			1 & 2  & 3 \\
+			4 & -6 & 7 \\
+			1 & 8  & 9
+		\end{pmatrix}, \quad \vf{D} = \begin{pmatrix}
+			4 & 5  & 6 \\
+			3 & -1 & 2 \\
+			1 & 6  & 4
+		\end{pmatrix}.
+	$$
+	\begin{enumerate}
+		\item \textcolor{red}{Compute $\vf{A} + \vf{B}$, $\vf{A}\vf{B}$, $\vf{C}\vf{D}$.}
+		      \begin{note}
+			      In \texttt{Python}, matrices can be defined as an array using the \texttt{numpy} library. For example, the matrix $\vf{A}$ can be defined as
+			      \begin{verbatim}
+import numpy as np
+A = np.array([[7, 2],[3, 6]])
+			\end{verbatim}
+			      Matrix addition can be performed using the \texttt{+} operator, while matrix multiplication can be performed using the \texttt{@} operator. The operator \texttt{*} performs element-wise multiplication, e.g. \texttt{A * A} will result in the matrix
+			      $$\begin{pmatrix}
+					      49 & 4  \\
+					      9  & 36
+				      \end{pmatrix},$$
+			      while \texttt{A @ A} will result in
+			      $$\begin{pmatrix}
+					      55 & 26 \\
+					      39 & 42
+				      \end{pmatrix}.$$
+		      \end{note}
+		     
+		\item Remember that a necessary and sufficient condition for a matrix to be invertible is that its determinant is non-zero. \textcolor{red}{Compute the determinants of $\vf{A}$, $\vf{B}$, $\vf{C}$ and $\vf{D}$ and check which of these matrices are invertible. For those that are, compute their inverses.}
+		      \begin{note}
+			      Let's start using the \texttt{scipy} library to compute determinants and inverses. For this we need to import the \texttt{linalg} module from \texttt{scipy} as follows:
+			      \begin{verbatim}
+				import scipy.linalg as la
+			\end{verbatim}
+			      Then, the determinant of a matrix \texttt{M} can be computed using
+			      \begin{verbatim}
+				det_M = la.det(M)
+			\end{verbatim}
+			      and if the matrix is invertible, its inverse can be computed using
+			      \begin{verbatim}
+				inv_M = la.inv(M)
+			\end{verbatim}
+		      \end{note}
+
+		      
+		\item A pair $(\lambda, \vf{v})$, where $\lambda$ is a scalar (e.g. $\lambda \in\RR$) and $\vf{v}$ is a vector (e.g. $\vf{v}\in\RR^n$), is called an eigenvalue-eigenvector pair of a square matrix $\vf{M}$ if it satisfies the equation
+		      $$\vf{M}\vf{v} = \lambda \vf{v}.
+		      $$
+		      It can be seen that a necessary condition for $\lambda$ to be an eigenvalue of $\vf{M}$ is that $p(\lambda)=\det(\vf{M} - \lambda \vf{I}) = 0$, where $\vf{I}$ is the identity matrix of the same size as $\vf{M}$. Note that $p(\lambda)$ is a polynomial of degree $n$ if $\vf{M}\in\RR^{n\times n}$, called the \emph{characteristic polynomial} of $\vf{M}$.
+
+		      Recall that even if a matrix has real entries, its eigenvalues and eigenvectors may be complex. In this case, we will also have their conjugates as eigenvalue-eigenvector pairs (remember if $z=a+b\ii \in\CC$, its conjugate is $\bar{z}=a-b\ii$). This is because if $\vf{M}\vf{v} = \lambda \vf{v}$, then taking conjugates on both sides gives $\overline{\vf{M}\vf{v}} = \overline{\lambda \vf{v}}$, which implies that $\vf{M}\overline{\vf{v}} = \overline{\lambda} \overline{\vf{v}}$ since $\vf{M}$ has real entries (e.g. $\overline{\vf{M}} = \vf{M}$).
+					
+					\textcolor{red}{Compute the characteristic polynomial of all the matrices above and find the eigenvalues by finding the roots of these polynomials.}
+		      \begin{note}
+			      In \texttt{Python}, the eigenvalues and eigenvectors of a matrix \texttt{M} can be computed using the function \texttt{eig} from the \texttt{linalg} module as follows:
+			      \begin{verbatim}
+				eigenvalues, eigenvectors = la.eig(M)
+			\end{verbatim}
+			      The variable \texttt{eigenvalues} will contain the eigenvalues of the matrix, while the variable \texttt{eigenvectors} will contain the corresponding eigenvectors as columns.
+
+			      Note that \texttt{Python} uses the letter \texttt{j} to represent the imaginary unit $\ii$. E.g. to introduce the complex number $3 + 4\ii$, you would write
+			      \begin{verbatim}
+				z = 3 + 4j
+			\end{verbatim}
+		      \end{note}
+
+		      
+		\item In the case of having $n$ distinct eigenvalues $\lambda_1, \lambda_2, \ldots, \lambda_n$ with corresponding eigenvectors $\vf{v}_1, \vf{v}_2, \ldots, \vf{v}_n$ of a matrix $\vf{M}\in\RR^{n\times n}$, it can be shown that if we define the matrix $$
+			      \vf{V} = \begin{pmatrix}
+				      |        & |        &        & |        \\
+				      \vf{v}_1 & \vf{v}_2 & \ldots & \vf{v}_n \\
+				      |        & |        &        & |
+			      \end{pmatrix}
+		      $$ (i.e. the matrix whose columns are the eigenvectors of $\vf{M}$) and the diagonal matrix
+		      $$
+			      \vf{\Lambda} = \begin{pmatrix}
+				      \lambda_1 & 0         & \cdots & 0         \\
+				      0         & \lambda_2 & \cdots & 0         \\
+				      \vdots    & \vdots    & \ddots & \vdots    \\
+				      0         & 0         & \cdots & \lambda_n
+			      \end{pmatrix},
+		      $$
+		      then the following relation holds:
+		      $$\vf{M} = \vf{V} \vf{\Lambda} \vf{V}^{-1}.$$
+		      This is called the \emph{eigendecomposition} of $\vf{M}$.
+					
+					\textcolor{red}{For those matrices with $n$ distinct eigenvalues, compute their eigendecomposition and verify that the relation above holds. (Be careful with the ordering of the eigenvalues and eigenvectors in the matrices $\vf{\Lambda}$ and $\vf{V}$! The order doesn't matter as long as the pairs are kept together, e.g. if $\lambda_i$ is the $j$-th eigenvalue, then $\vf{v}_i$ must be the $j$-th eigenvector).}
+		      \begin{note}
+			      Note that the matrix \texttt{eigenvectors} obtained from the function \texttt{eig} already corresponds to the matrix $\vf{V}$ defined above. The matrix $\vf{\Lambda}$ can be constructed using the function \texttt{diag} from the \texttt{numpy} library as follows:
+			      \begin{verbatim}
+				Lambda = np.diag(eigenvalues)
+			\end{verbatim}
+		      \end{note}
+
+		      
+		\item An important property of determinants is that if $\vf{M}_1, \vf{M}_2$ are square matrices of the same size, then
+		      $$\det(\vf{M}_1 \vf{M}_2) = \det(\vf{M}_1) \det(\vf{M}_2).$$
+		      From here, it follows that
+		      $$1 = \det(\vf{I}) = \det(\vf{M}\vf{M}^{-1}) = \det(\vf{M}) \det(\vf{M}^{-1}),$$
+		      which implies that
+		      $$\det(\vf{M}^{-1}) = \frac{1}{\det(\vf{M})}.$$
+
+		      We can apply this property to the eigendecomposition of a matrix $\vf{M}$ as follows:
+		      $$\det(\vf{M}) = \det(\vf{V} \vf{\Lambda} \vf{V}^{-1}) = \det(\vf{V}) \det(\vf{\Lambda}) \det(\vf{V}^{-1}) =\det(\vf{V}) \det(\vf{\Lambda}) \det(\vf{V})^{-1} = \det(\vf{\Lambda}) = \lambda_1 \lambda_2 \cdots \lambda_n,$$
+		      where in the last equality we have used that the determinant of a diagonal matrix is the product of its diagonal entries.
+
+					\textcolor{red}{Using the property above, compute the determinants of the matrices using their eigenvalues and verify that they match the values computed in part (2).}
+		      \begin{note}
+			      In \texttt{Python}, and particularly in \texttt{numpy}, we want to avoid for loops as much as possible for efficiency reasons. To compute the sum or product of an array \texttt{A}, you can use the function \texttt{sum} or \texttt{prod}, respectively, from the \texttt{numpy} library as follows:
+			      \begin{verbatim}
+				sum_A = np.sum(A)
+				prod_A = np.prod(A)	
+			\end{verbatim}
+		      \end{note}
+
+		\item \textcolor{red}{\textbf{Important!} Can you think in a way of generating invertible random matrices of size $n$ with eigenvalues in the interval $(a,b)$? (this will be useful later on when generating test cases). We can set $n = 3$ (for the moment) $a = 0.1$ and $b = 5$. For the sake of numerical stability we don't want eigenvalues too close to zero neither too large.}
+		      \begin{note}
+			      Hint: you can generate random numbers in \texttt{Python} using the \texttt{random} module from the \texttt{numpy} library. For example, to generate a random number between $0$ and $1$, you can use
+			      \begin{verbatim}
+				num = np.random.rand()
+			\end{verbatim}
+			      and to generate a random number between $a$ and $b$, you can use
+			      \begin{verbatim}
+				num = a + (b - a) * np.random.rand()
+			\end{verbatim}
+		      \end{note}
+				\item \textcolor{red}{\textbf{Important!} What if we want a random number of eigenvalues $0\leq m \leq n$ (with $n$ the size of the matrix) to be in the interval $(a,b)$ and the rest, e.g. $n-m$, to be in the interval $(c,d)$?} 
+	\end{enumerate}
+\end{ex}
+\subsection*{Norms and orthogonality}
+\begin{ex}
+	Consider the vectors
+	$$
+		\vf{u} = \begin{pmatrix}
+			1 \\
+			2 \\
+			-1
+		\end{pmatrix}, \quad \vf{v} = \begin{pmatrix}
+			-2 \\
+			1  \\
+			8
+		\end{pmatrix}, \quad \vf{w} = \begin{pmatrix}
+			4 \\
+			0 \\
+			1
+		\end{pmatrix}.
+	$$
+	\begin{enumerate}
+		\item	We define the \emph{inner product} (or \emph{dot product}) of two vectors $\vf{a}, \vf{b} \in \RR^n$ as the matrix multiplication
+		$$\langle\vf{a}, \vf{b}\rangle = \sum_{i=1}^n a_i b_i,$$
+		Here $a_i$ and $b_i$ denote the $i$-th components of the vectors $\vf{a}$ and $\vf{b}$, respectively. We say that two vectors are \emph{orthogonal} if their inner product is zero, i.e. $\langle\vf{a}, \vf{b}\rangle = 0$.
+
+		We define the \emph{norm} of a vector $\vf{a} \in \RR^n$ as
+		$$\|\vf{a}\| = \sqrt{\langle\vf{a}, \vf{a}\rangle } = \sqrt{\sum_{i=1}^n a_i^2}.$$
+		
+		\textcolor{red}{Compute $\langle \vf{u}, \vf{v} \rangle$, $\langle \vf{u}, \vf{w} \rangle$ and $\langle \vf{v}, \vf{w} \rangle$. Are any of these vectors orthogonal to each other? Compute the norms $\|\vf{u}\|$, $\|\vf{v}\|$ and $\|\vf{w}\|$.}
+		      \begin{note}
+			      In \texttt{Python}, the inner product of two vectors \texttt{a} and \texttt{b} can be computed using the function \texttt{dot} from the \texttt{numpy} library as follows:
+			      \begin{verbatim}
+						inner_product = np.dot(a, b)
+					\end{verbatim}
+			      The norm of a vector \texttt{a} can be computed using the function \texttt{norm} from the \texttt{linalg} module of the \texttt{scipy} library as follows:
+			      \begin{verbatim}
+						norm_a = la.norm(a)
+					\end{verbatim}
+		      \end{note}
+		    \item  We say that a vector $\vf{a}$ is linearly dependent on a set of vectors $\{\vf{b}_1, \vf{b}_2, \ldots, \vf{b}_m\}$ if there exist scalars $c_1, c_2, \ldots, c_m$ such that
+		      $$\vf{a} = c_1 \vf{b}_1 + c_2 \vf{b}_2 + \cdots + c_m \vf{b}_m.$$
+		      If no such scalars exist, then we say that $\vf{a}$ is linearly independent of the set $\{\vf{b}_1, \vf{b}_2, \ldots, \vf{b}_m\}$. Since the determinant of a matrix is invariant under column operations, it can be shown that a set of $n$ vectors $\{\vf{b}_1, \vf{b}_2, \ldots, \vf{b}_n\}$ in $\RR^n$ is linearly independent if and only if the matrix
+		      $$\vf{B} = \begin{pmatrix}
+				      |        & |        &        & |        \\
+				      \vf{b}_1 & \vf{b}_2 & \ldots & \vf{b}_n \\
+				      |        & |        &        & |
+			      \end{pmatrix}$$
+		      is invertible (i.e. $\det(\vf{B}) \neq 0$).
+
+		\textcolor{red}{Arrange these vectors as columns of a matrix $$\vf{M} = \begin{pmatrix}
+					      |      & |      & |      \\
+					      \vf{u} & \vf{v} & \vf{w} \\
+					      |      & |      & |
+				      \end{pmatrix}$$ and compute the matrix $\det(\vf{M})$. Compute the determinants of the following matrices as well:
+			      $$\vf{M}_1 = \begin{pmatrix}
+					      |              & |               & |      \\
+					      \vf{u}+4\vf{v} & \vf{v}  & \vf{w} - \vf{u}\\
+					      |              & |               & |
+				      \end{pmatrix}, \quad \vf{M}_2 = \begin{pmatrix}
+					      |             & |                         & |      \\
+								\vf{u}  &\vf{v}-3\vf{u} & \vf{w} + 2\vf{v} +7\vf{u}\\
+					      |             & |                         & |
+				      \end{pmatrix}.$$ What do you observe?}
+		      \begin{note}
+			      If you have defined the vectors \texttt{u}, \texttt{v} and \texttt{w} as row vectors (e.g. \texttt{u = np.array([1, 2, -1])}), you can arrange them as columns of a matrix \texttt{M} as follows:
+			      \begin{verbatim}
+M = np.column_stack((u, v, w))
+												\end{verbatim}
+		      \end{note}
+				\item Gram-Schmidt orthogonalization is a method for generating an orthogonal set of vectors from a linearly independent set of vectors. Given a set of linearly independent vectors $\{\vf{b}_1, \vf{b}_2, \ldots, \vf{b}_m\}$, we can generate an orthogonal set of vectors $\{\vf{u}_1, \vf{u}_2, \ldots, \vf{u}_m\}$ as follows:
+		      \begin{align*}
+			      \vf{u}_1 & = \vf{b}_1, \\
+			      \vf{u}_2 & = \vf{b}_2 - \frac{\langle \vf{u}_1, \vf{b}_2 \rangle}{\langle \vf{u}_1, \vf{u}_1 \rangle} \vf{u}_1, \\
+			      \vf{u}_3 & = \vf{b}_3 - \frac{\langle \vf{u}_1, \vf{b}_3 \rangle}{\langle \vf{u}_1, \vf{u}_1 \rangle} \vf{u}_1 - \frac{\langle \vf{u}_2, \vf{b}_3 \rangle}{\langle \vf{u}_2, \vf{u}_2 \rangle} \vf{u}_2, \\
+			      &\vdotswithin{=}\\
+			      \vf{u}_m & = \vf{b}_m - \sum_{j=1}^{m-1} \frac{\langle \vf{u}_j, \vf{b}_m \rangle}{\langle \vf{u}_j, \vf{u}_j \rangle} \vf{u}_j.
+		      \end{align*}
+					In orther for them to be an orthonormal set (which means orthogonal and unit norm for each vector), we can normalize each vector as well:
+					$$\vf{e}_i = \frac{\vf{u}_i}{\|\vf{u}_i\|}, \quad i = 1, 2, \ldots, m.$$
+					So that $\langle \vf{e}_i, \vf{e}_j \rangle = 0$ for $i \neq j$ and $\|\vf{e}_i\| = 1$ for all $i$.
+
+		\textcolor{red}{Check theoretically that for all $i,j = 1, 2, \ldots, m$ with $i \neq j$, we have that $\langle \vf{u}_i, \vf{u}_j \rangle = 0$. Hint: Apply the formulas above and use the properties of the inner product (check wikipedia if you need to)}
+	\item \textcolor{red}{Apply the Gram-Schmidt process to the set of vectors $\{\vf{u}, \vf{v}, \vf{w}\}$ defined above to generate an orthonormal set of vectors $\{\vf{a}, \vf{b}, \vf{c}\}$. Verify that these vectors are indeed orthogonal to each other by computing their inner products. You should get $\langle \vf{a}, \vf{b} \rangle = \langle \vf{a}, \vf{c} \rangle = \langle \vf{b}, \vf{c} \rangle = 0$. Check as well that their norms are unitary, e.g. $\|\vf{a}\| = \|\vf{b}\| = \|\vf{c}\| = 1$.}
+	\item Given a matrix 
+	$$\vf{M} = \begin{pmatrix}
+			m_{11} & m_{12} & \cdots & m_{1n} \\
+			m_{21} & m_{22} & \cdots & m_{2n} \\
+			\vdots & \vdots & \ddots & \vdots \\
+			m_{n1} & m_{n2} & \cdots & m_{nn}
+		\end{pmatrix},$$
+			 we define its transpose as
+			 $$\transpose{\vf{M}} = \begin{pmatrix}
+				 					 m_{11} & m_{21} & \cdots & m_{n1} \\
+					 m_{12} & m_{22} & \cdots & m_{n2} \\
+					 \vdots & \vdots & \ddots & \vdots \\
+					 m_{1n} & m_{2n} & \cdots & m_{nn}
+				 \end{pmatrix}.$$
+			 (we send rows to columns and vice versa, or equivalently we mirror along the main diagonal). We say that a matrix is \emph{symmetric} if $\vf{M} = \transpose{\vf{M}}$.
+
+				\textcolor{red}{Compute the transpose of the matrix $$\vf{N} = \begin{pmatrix}
+						|			& |      & |      \\
+						\vf{a} & \vf{b} & \vf{c} \\
+						|			& |      & |
+				\end{pmatrix},$$ where $\vf{a}, \vf{b}, \vf{c}$ are the orthonormal vectors obtained in the previous part.}
+			\begin{note}
+				In \texttt{Python}, the transpose of a matrix \texttt{M} can be computed using the attribute \texttt{T} as follows:
+				\begin{verbatim}
+					M_transpose = M.T
+				\end{verbatim}			  
+			\end{note}
+		\item \textcolor{red}{Compute the inverse of $\vf{N}$. Does it sound familiar the expression you get? Solution: you should get that $\vf{N}^{-1} = \transpose{\vf{N}}$.}
+		\item Let's think now that $\vf{N}$ does the role of $\vf{V}$ in the eigendecomposition of a matrix $\vf{M}$ in the previous exercise, e.g. $$\vf{M} = \vf{N} \vf{\Lambda} \vf{N}^{-1}= \vf{N} \vf{\Lambda} \transpose{\vf{N}},$$ where $\vf{\Lambda}$ is a diagonal matrix with the eigenvalues of $\vf{M}$ in its diagonal. 
+
+			\textcolor{red}{Prove that in this case, the matrix $\vf{M}$ is symmetric, e.g. $\vf{M} = \transpose{\vf{M}}$. Hint: use the property of the transpose operation that states that $\transpose{(\vf{A}\vf{B})} = \transpose{\vf{B}} \transpose{\vf{A}}$. First try to do it mathematically formal and general, then check it with the matrix $\vf{N}$ computed before and any diagonal matrix $\vf{\Lambda}$ of your choice.}
+		\item \textcolor{red}{\textbf{Important!} How would you adapt the method in the 6th section of exercice 1 to generate random symmetric matrices with eigenvalues in the interval $(a,b)$?}
+	\end{enumerate}
+
+\end{ex}
+
+\end{document}
