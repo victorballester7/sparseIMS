@@ -35,7 +35,7 @@ def generate_symnetric(dimension: int) -> Tuple[np.ndarray, np.ndarray]:
 
 def main():
     # Generate list of dimensions
-    dimensions = [int(2**i) for i in range(3, 9)]
+    dimensions = [int(2**i) for i in range(3, 7)]
 
     # Evaluate Performance - due to @charectarise
     results_sym = [generate_symnetric(d) for d in dimensions]

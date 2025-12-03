@@ -61,10 +61,10 @@ def generate_sparse(
 
 def main():
     # Generate list of dimensions
-    dimensions = [2**i for i in range(7, 13)]  # 256 to 4096
+    dimensions = [2**i for i in range(3, 7)]  
 
     # fix rho
-    rho = 0.01
+    rho = 0.2
 
     # Evaluate Performance - due to @charectarise
     results_sparse = [generate_sparse(d, rho) for d in dimensions]
