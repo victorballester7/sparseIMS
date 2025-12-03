@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from typing import Callable
+
 
 
 class Measure(ABC):
@@ -9,13 +11,9 @@ class Measure(ABC):
         return type(self).__name__
 
     @abstractmethod
-    def start(self):
-        pass
-
-    @abstractmethod
-    def stop(self):
+    def measure(self, func: Callable):
         raise NotImplementedError
 
     @abstractmethod
-    def measure(self) -> float:
+    def compute(self) -> float:
         raise NotImplementedError

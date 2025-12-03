@@ -1,12 +1,14 @@
-import time
-from typing import Optional
+import timeit
+from typing import Callable
+import numpy as np
 
 from ._measure import Measure
 
 
 class ExecutionTime(Measure):
-    start_time: Optional[float]
-    stop_time: Optional[float]
+    times: np.ndarray
+    iterations: int = 100
+    repetitions: int = 5
 
     def __init__(self):
         self.start_time = None
@@ -15,15 +17,15 @@ class ExecutionTime(Measure):
     def __str__(self) -> str:
         return super().__str__()
 
-    def start(self):
-        self.start_time = time.perf_counter()
+    def measure(self, func: Callable):
+        self.times = (
+            np.array(
+                timeit.repeat(
+                    stmt=func, repeat=self.repetitions, number=self.iterations
+                )
+            )
+            / self.iterations
+        )
 
-    def stop(self):
-        self.stop_time = time.perf_counter()
-
-    def measure(self) -> float:
-        if self.start_time is None:
-            raise ValueError('Unable to evaluate - timer was not started.')
-        if self.stop_time is None:
-            raise ValueError('Unable to evaluate - timer was not stopped.')
-        return self.stop_time - self.start_time
+    def compute(self) -> float:
+        return np.min(self.times)

@@ -3,6 +3,7 @@ from typing import Callable, List, ParamSpec, Tuple, Type, TypeVar
 
 import numpy as np
 import polars as pl
+from scipy.sparse import csc_matrix
 
 from .measures._measure import Measure
 from .methods._method import Method
@@ -16,7 +17,6 @@ B = TypeVar('B', bound=np.ndarray)
 def characterise(
     methods: List[Type['Method']],
     measures: List[Type['Measure']],
-    iterations: int,
     realisations: int,
 ) -> Callable[[Callable[P, Tuple[A, B]]], Callable[P, pl.DataFrame]]:
     def decorator(func: Callable[P, Tuple[A, B]]) -> Callable[P, pl.DataFrame]:
@@ -36,20 +36,20 @@ def characterise(
             _methods = [m() for m in methods]
 
             for method in _methods:
+                print(f"Solving with using method {method} with dimension {args[0]}")
+
                 for r in range(realisations):
                     a, b = func(*args, **kwargs)
+                    if method.is_sparse():
+                        print("Converting to sparse matrix format.")
+                        a = csc_matrix(a)
+                    # a = csc_matrix(a) if method.is_sparse() else a
                     _measures = [m() for m in measures]
 
-                    for measure in _measures:
-                        measure.start()
-                        for _ in range(iterations):
-                            _ = method.eval(a, b)
-                        for measure in _measures:
-                            measure.stop()
+                    for m in _measures:
+                        m.measure(lambda: method.eval(a, b))
 
-                    measurements = [
-                        m.measure() / iterations for m in _measures
-                    ]
+                    measurements = [m.compute() for m in _measures]
 
                     row = pl.DataFrame(
                         [[str(method), r] + measurements],

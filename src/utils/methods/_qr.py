@@ -1,5 +1,5 @@
 import numpy as np
-from scipy.linalg import lu_factor, lu_solve
+import scipy.linalg as la
 
 from scipy.sparse import spmatrix
 
@@ -7,13 +7,11 @@ from ..methods._method import Method
 from typing import Union
 
 
-
-
-class LU(Method):
+class QR(Method):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
     def eval(self, a: Union[np.ndarray, spmatrix], b: np.ndarray):
-        lu, piv = lu_factor(a)
-        x = lu_solve((lu, piv), b)
+        q, r = la.qr(a)
+        x = la.solve(r, q.T @ b)
         return x
